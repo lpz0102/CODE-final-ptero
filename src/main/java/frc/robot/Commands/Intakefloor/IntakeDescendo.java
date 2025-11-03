@@ -1,0 +1,35 @@
+package frc.robot.Commands.Intakefloor;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystem.IntakeFloor;
+
+public class IntakeDescendo extends Command {
+    private final IntakeFloor intake;
+    private final double velocidadeDescendo = 0.6;
+    private final double posicaoDescendo = 100.0;
+
+
+    public IntakeDescendo(IntakeFloor intake) {
+        this.intake = intake;
+        addRequirements(intake);
+    }
+    @Override
+    public void initialize(){
+        
+    }
+
+    @Override
+    public void execute() {
+       intake.intakeMarlonMotor.set(velocidadeDescendo);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        intake.intakeMarlonMotor.stopMotor();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return intake.getIntakeMarlonPosition() <= posicaoDescendo;
+    }
+}
