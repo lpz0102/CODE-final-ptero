@@ -1,99 +1,127 @@
-package frc.robot.Subsystem;
-
-import com.revrobotics.spark.SparkMax;
-
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-public class IntakeFloor extends SubsystemBase {
-    public SparkMax intakeMarlonMotor = new SparkMax(Constants.IntakeFloor.intakeMarlonMotorID, MotorType.kBrushless);
-    public SparkMax intakeCleitaoMotor = new SparkMax(Constants.IntakeFloor.intakeCleitaoMotorID, MotorType.kBrushless);
-    public final double LimiteSuperior = 270.0;
-    public final double LimiteInferior = 0.0;
-
-    private RelativeEncoder intakeMarlonEncoder = intakeMarlonMotor.getEncoder();
-
-    SparkMaxConfig configSparkintakeMarlonMotor = new SparkMaxConfig();
-    SparkMaxConfig configSparkintakeCleitaoMotor = new SparkMaxConfig();
-
-    public IntakeFloor() {
-        intakeMarlonMotor.configure(
-                new SparkMaxConfig()
-                        .idleMode(IdleMode.kBrake)
-                        .inverted(true)
-                        .smartCurrentLimit(50),
-                ResetMode.kNoResetSafeParameters,
-                PersistMode.kPersistParameters);
-
-        intakeCleitaoMotor.configure(
-                new SparkMaxConfig()
-                        .idleMode(IdleMode.kBrake)
-                        .smartCurrentLimit(50),
-                ResetMode.kNoResetSafeParameters,
-                PersistMode.kPersistParameters);
-
-        zeroIntakeEncoders();
-    }
-
-    public void zeroIntakeEncoders() {
-        intakeMarlonEncoder.setPosition(0);
-    }
-
-    public double getIntakeMarlonPosition() {
-        return intakeMarlonEncoder.getPosition();
-    }
-
-    public double getPosicaoGraus() {
-        double graus = intakeMarlonEncoder.getPosition() * 360.0;
-        graus = ((graus % 360) + 360) % 360;
-        return graus;
-    }
-
-    private final double LimiteSuperiorGraus = 300.0;
-    private final double LimiteInferiorGraus = 75.0;
-
-    public boolean isNoLimiteSuperior() {
-        return getPosicaoGraus() >= LimiteSuperiorGraus;
-    }
-
-    public boolean isNoLimiteInferior() {
-        return getPosicaoGraus() <= LimiteInferiorGraus;
-    }
-
-    public void setIntakeMarlonVelocidade(double velocidade) {
-        intakeMarlonMotor.set(velocidade);
-    }
-
-    public void setRoller(double velocidade) {
-        intakeCleitaoMotor.set(velocidade);
-    }
-
-    public void stopRoller() {
-        intakeCleitaoMotor.stopMotor();
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Intake - Posição Marlon", intakeMarlonEncoder.getPosition());
-        SmartDashboard.putNumber("Intake - Velocidade Marlon", intakeMarlonEncoder.getVelocity());
-
-        // Mostra estado dos motores
-        SmartDashboard.putNumber("Motor Marlon - Saída", intakeMarlonMotor.get());
-        SmartDashboard.putNumber("Motor Cleitao - Saída", intakeCleitaoMotor.get());
-    }
-
-    public void stopIntake() {
-        intakeMarlonMotor.stopMotor();
-        intakeCleitaoMotor.stopMotor();
-    }
-
-}
+/*
+ * package frc.robot.Subsystem;
+ * 
+ * import com.revrobotics.spark.SparkMax;
+ * 
+ * import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+ * 
+ * import com.revrobotics.spark.config.SparkMaxConfig;
+ * import com.revrobotics.spark.SparkLowLevel.MotorType;
+ * import com.revrobotics.RelativeEncoder;
+ * import com.revrobotics.spark.SparkBase.PersistMode;
+ * import com.revrobotics.spark.SparkBase.ResetMode;
+ * import com.revrobotics.spark.SparkPIDController;
+ * 
+ * import edu.wpi.first.wpilibj2.command.SubsystemBase;
+ * import frc.robot.Constants;
+ * import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+ * 
+ * public class IntakeFloor extends SubsystemBase {
+ * public SparkMax intakeMarlonMotor = new
+ * SparkMax(Constants.IntakeFloor.intakeMarlonMotorID, MotorType.kBrushless);
+ * public SparkMax intakeCleitaoMotor = new
+ * SparkMax(Constants.IntakeFloor.intakeCleitaoMotorID, MotorType.kBrushless);
+ * public static final double LimiteSuperior = 300.0;
+ * public static final double LimiteInferior = 75.0;
+ * public static final double Reducao = 64.0;
+ * 
+ * private RelativeEncoder intakeMarlonEncoder = intakeMarlonMotor.getEncoder();
+ * private final SparkPIDController pid = intakeMarlonMotor.getPIDController();
+ * 
+ * SparkMaxConfig configSparkintakeMarlonMotor = new SparkMaxConfig(15,
+ * MotorType.kBrushless);
+ * SparkMaxConfig configSparkintakeCleitaoMotor = new SparkMaxConfig(16,
+ * MotorType.kBrushless);
+ * 
+ * public IntakeFloor() {
+ * intakeMarlonMotor.configure(
+ * new SparkMaxConfig()
+ * .idleMode(IdleMode.kBrake)
+ * .inverted(false)
+ * .smartCurrentLimit(50),
+ * ResetMode.kNoResetSafeParameters,
+ * PersistMode.kPersistParameters);
+ * 
+ * intakeCleitaoMotor.configure(
+ * new SparkMaxConfig()
+ * .idleMode(IdleMode.kBrake)
+ * .smartCurrentLimit(50),
+ * ResetMode.kNoResetSafeParameters,
+ * PersistMode.kPersistParameters);
+ * 
+ * pid.setP(0.02);
+ * pid.setI(0.0);
+ * pid.setD(0.0);
+ * 
+ * resetToStartAngle();
+ * }
+ * 
+ * public double getAngulo() {
+ * return intakeMarlonEncoder.getPosition() * (360.0 / Reducao);
+ * }
+ * 
+ * public double grausParaRotacao(double graus) {
+ * return (graus / 360.0) * Reducao;
+ * }
+ * 
+ * public void resetToStartAngle() {
+ * intakeMarlonEncoder.setPosition(grausParaRotacao(LimiteSuperior));
+ * }
+ * public void moverParaAngulo(double alvoGraus){
+ * double alvoRot = grausParaRotacao(alvoGraus);
+ * 
+ * pid.setReference(alvoRot,
+ * com.revrobotics.spark.SparkPIDController.ControllerType.kPosition);
+ * }
+ * 
+ * //public boolean noLimiteSuperior() {
+ * return getAngulo() >= LimiteSuperior;
+ * }
+ * 
+ * public boolean noLimiteInferior() {
+ * return getAngulo() >= LimiteInferior;
+ * }
+ * 
+ * public double getIntakeMarlonPosition() {
+ * return intakeMarlonEncoder.getPosition();
+ * }
+ * 
+ * public void setIntakeMarlonVelocidade(double velocidade) {
+ * if (velocidade > 0 && noLimiteSuperior()) {
+ * intakeMarlonMotor.stopMotor();
+ * return;
+ * }
+ * if (velocidade < 0 && noLimiteInferior()) {
+ * intakeMarlonMotor.stopMotor();
+ * return;
+ * }
+ * intakeMarlonMotor.set(velocidade);
+ * }
+ * 
+ * public void setRoller(double velocidade) {
+ * intakeCleitaoMotor.set(velocidade);
+ * }
+ * 
+ * public void stopRoller() {
+ * intakeCleitaoMotor.stopMotor();
+ * }
+ * 
+ * public void stopIntake() {
+ * intakeMarlonMotor.stopMotor();
+ * intakeCleitaoMotor.stopMotor();
+ * }
+ * 
+ * @Override
+ * public void periodic() {
+ * SmartDashboard.putNumber("Intake Ângulo (°)", getAngulo());
+ * SmartDashboard.putNumber("Marlon Rotações",
+ * intakeMarlonEncoder.getPosition());
+ * SmartDashboard.putBoolean("Limite Superior 300", noLimiteInferior());
+ * SmartDashboard.putBoolean("Limite Inferior 75º", noLimiteSuperior());
+ * 
+ * SmartDashboard.putNumber("Lift Output", intakeMarlonMotor.get());
+ * SmartDashboard.putNumber("Roller Output", intakeCleitaoMotor.get());
+ * }
+ * 
+ * }
+ */

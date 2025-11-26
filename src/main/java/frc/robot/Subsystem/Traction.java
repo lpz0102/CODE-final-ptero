@@ -40,7 +40,7 @@ public class Traction extends SubsystemBase {
                  * configSparkMotorDireita.inverted(true)
                  */
                 configSparkMotorDireita.inverted(false).idleMode(IdleMode.kBrake);
-                configSparkMotorDireita.smartCurrentLimit(50);
+                configSparkMotorDireita.smartCurrentLimit(60);
 
                 rightMotorFront.configure(configSparkMotorDireita, ResetMode.kResetSafeParameters,
                                 PersistMode.kPersistParameters);
@@ -48,7 +48,7 @@ public class Traction extends SubsystemBase {
                                 PersistMode.kPersistParameters);
 
                 configSparkMotorEsquerda.inverted(false).idleMode(IdleMode.kBrake);
-                configSparkMotorEsquerda.smartCurrentLimit(50);
+                configSparkMotorEsquerda.smartCurrentLimit(60);
 
                 leftMotorFront.configure(configSparkMotorEsquerda, ResetMode.kResetSafeParameters,
                                 PersistMode.kPersistParameters);

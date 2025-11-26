@@ -1,11 +1,13 @@
 package frc.robot;
 
 public final class Constants {
+
+    // numeração dos sprks do griffo
     public static class TractionConstants {
-        public static int rightFrontMotorID = 12;
-        public static int leftBackMotorID = 8;
-        public static int leftFrontMotorID = 9;
-        public static int rightBackMotorID = 10;
+        public static int rightFrontMotorID = 5;
+        public static int leftBackMotorID = 1;
+        public static int leftFrontMotorID = 3;
+        public static int rightBackMotorID = 2;
     }
 
     public static class ControlsXbox {
@@ -13,11 +15,14 @@ public final class Constants {
         public static int rightMotors = 1;
     }
 
-    public static class IntakeFloor {
-        public static int intakeMarlonMotorID = 19;
-        public static int intakeCleitaoMotorID = 13;
+    /*
+     * public static class IntakeFloor {
+     * public static int intakeMarlonMotorID = 9;
+     * public static int intakeCleitaoMotorID = 8;
+     * 
+     * public static final double IntakeIn = 45.0;
+     * public static final double IntakeOut = 0.0;
+     * }
+     */
 
-        public static final double IntakeIn = 45.0;
-        public static final double IntakeOut = 0.0;
-    }
 }

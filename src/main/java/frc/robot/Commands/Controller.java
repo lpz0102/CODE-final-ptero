@@ -18,7 +18,7 @@ public class Controller extends Command {
         this.traction = traction;
         this.xbox = xbox;
 
-        // Use addRequirements() here to declare subsystem dependencies.
+        // Use addRequirements() aqui para declarar dependências de subsistemas.
         addRequirements(traction);
     }
 
@@ -26,7 +26,7 @@ public class Controller extends Command {
         turboAtivo = !turboAtivo;
     }
 
-    // Called when the command is initially scheduled.
+    // Chamado quando o comando é agendado inicialmente.
     @Override
     public void initialize() {
         drive = 0;
@@ -34,7 +34,7 @@ public class Controller extends Command {
 
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
+    // Chamado sempre que o agendador é executado enquanto o comando está agendado.
     @Override
     public void execute() {
 
@@ -64,13 +64,11 @@ public class Controller extends Command {
         traction.arcadeMode(drive, +turn);
     }
 
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         traction.stop();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return false;
